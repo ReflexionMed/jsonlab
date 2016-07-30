@@ -191,7 +191,9 @@ global pos inStr isoct
         	astr(astr==' ')='';
         	[obj, count, errmsg, nextidx]=sscanf(astr,'%f,',inf);
         	if(nextidx>=length(astr)-1)
-                    object=reshape(obj,dim2,numel(obj)/dim2)';
+                    if(dim2~=0)
+                        object=reshape(obj,dim2,numel(obj)/dim2)';
+                    end
                     pos=endpos;
                     parse_char(']');
                     if(pbar>0)
