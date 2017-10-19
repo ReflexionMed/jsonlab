@@ -438,6 +438,7 @@ else
     % "st = struct(item);" would produce an inmutable warning, because it
     % make the protected and private properties visible. Instead we get the
     % visible properties
+    st = struct();
     propertynames = properties(item);
     for p = 1:numel(propertynames)
         for o = numel(item):-1:1 % aray of objects
