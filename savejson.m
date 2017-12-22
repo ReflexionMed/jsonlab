@@ -165,11 +165,13 @@ end
 %%-------------------------------------------------------------------------
 function txt=obj2json(name,item,level,varargin)
 
-if(iscell(item))
+if iscell(item) || (isstring(item) && numel(item) > 1)
     txt=cell2json(name,item,level,varargin{:});
-elseif(isstruct(item))
+elseif isstruct(item)
     txt=struct2json(name,item,level,varargin{:});
-elseif(ischar(item))
+elseif isstring(item)
+    txt=str2json(name,char(item),level,varargin{:});
+elseif ischar(item)
     txt=str2json(name,item,level,varargin{:});
 elseif(isobject(item)) 
     txt=matlabobject2json(name,item,level,varargin{:});
@@ -180,7 +182,7 @@ end
 %%-------------------------------------------------------------------------
 function txt=cell2json(name,item,level,varargin)
 txt={};
-if(~iscell(item))
+if ~iscell(item) && ~isstring(item)
         error('input is not a cell');
 end
 
@@ -539,13 +541,13 @@ if(isoct)
    end
 end
 if(isoct)
-  escapechars={'\\','\"','\/','\a','\f','\n','\r','\t','\v'};
+  escapechars={'\\','\"','\a','\f','\n','\r','\t','\v'};
   for i=1:length(escapechars);
     newstr=regexprep(newstr,escapechars{i},escapechars{i});
   end
   newstr=regexprep(newstr,'\\\\(u[0-9a-fA-F]{4}[^0-9a-fA-F]*)','\$1');
 else
-  escapechars={'\\','\"','\/','\a','\b','\f','\n','\r','\t','\v'};
+  escapechars={'\\','\"','\a','\b','\f','\n','\r','\t','\v'};
   for i=1:length(escapechars);
     newstr=regexprep(newstr,escapechars{i},regexprep(escapechars{i},'\\','\\\\'));
   end
