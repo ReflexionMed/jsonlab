@@ -39,6 +39,12 @@ function json=savejson(rootname,obj,varargin)
 %                         _ArrayData_ array will include two columns 
 %                         (4 for sparse) to record the real and imaginary 
 %                         parts, and also "_ArrayIsComplex_":1 is added. 
+%        opt.CollapseEmptyArrays [1|0]: When set to 0, empty arrays with
+%                         dimension greater than 2 or non-zero size along
+%                         any dimension get converted to a struct (see
+%                         ArrayToStruct). Otherwise, these will all get
+%                         treated the same way as empty arrays with size
+%                         [0,0].
 %        opt.ParseLogical [0|1]: if this is set to 1, logical array elem
 %                         will use true/false rather than 1/0.
 %        opt.SingletArray [0|1]: if this is set to 1, arrays with a single
@@ -175,6 +181,9 @@ elseif ischar(item)
     txt=str2json(name,item,level,varargin{:});
 elseif(isobject(item)) 
     txt=matlabobject2json(name,item,level,varargin{:});
+elseif(jsonopt('CollapseEmptyArrays', 1, varargin{:}) && ...
+        ((length(size(item))>2) || ((isempty(item) && any(size(item))))))
+    txt=cell2json(name, {}, level, varargin{:});
 else
     txt=mat2json(name,item,level,varargin{:});
 end

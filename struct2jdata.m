@@ -86,7 +86,12 @@ if(~isempty(strmatch('x0x5F_ArrayType_',fn)) && ~isempty(strmatch('x0x5F_ArrayDa
         if(iscpx && size(ndata,2)==2)
              ndata=complex(ndata(:,1),ndata(:,2));
         end
-        ndata=reshape(ndata(:),data(j).x0x5F_ArraySize_);
+        if iscell(data(j).x0x5F_ArraySize_)
+            arraySize = [data(j).x0x5F_ArraySize_{:}];
+        else
+            arraySize = data(j).x0x5F_ArraySize_;
+        end
+        ndata=reshape(ndata(:),arraySize);
     end
     newdata{j}=ndata;
   end

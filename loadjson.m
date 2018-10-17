@@ -137,7 +137,7 @@ function object = parse_object(varargin)
         end
     end
     parse_char('}');
-    if(isstruct(object))
+    if(isstruct(object))    
         object=struct2jdata(object);
     end
 
