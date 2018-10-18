@@ -183,7 +183,7 @@ elseif(isobject(item))
     txt=matlabobject2json(name,item,level,varargin{:});
 elseif(jsonopt('CollapseEmptyArrays', 1, varargin{:}) && ...
         ((length(size(item))>2) || ((isempty(item) && any(size(item))))))
-    txt=cell2json(name, {}, level, varargin{:});
+    txt=mat2json(name, [], level, varargin{:});
 else
     txt=mat2json(name,item,level,varargin{:});
 end
