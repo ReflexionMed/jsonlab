@@ -23,13 +23,14 @@ function val=jsonopt(key,default,varargin)
 % -- this function is part of jsonlab toolbox (http://iso2mesh.sf.net/cgi-bin/index.cgi?jsonlab)
 % 
 
-val=default;
-if(nargin<=2) return; end
-opt=varargin{1};
-if(isstruct(opt))
-    if(isfield(opt,key))
-       val=getfield(opt,key);
-    elseif(isfield(opt,lower(key)))
-       val=getfield(opt,lower(key));
+val = default;
+if (nargin<=2), return; end
+opt = varargin{1};
+
+if isstruct(opt)
+    if isfield(opt, key)
+       val = opt.(key);
+    elseif isfield(opt,lower(key))
+       val = opt.(lower(key));
     end
 end

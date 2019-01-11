@@ -39,25 +39,25 @@ len=length(data);
 if(jsonopt('Recursive',0,varargin{:})==1)
   for i=1:length(fn) % depth-first
     for j=1:len
-        if(isstruct(getfield(data(j),fn{i})))
-            newdata(j)=setfield(newdata(j),fn{i},jstruct2array(getfield(data(j),fn{i})));
+        if isstruct(data(j).(fn{i}))
+            newdata(j).(fn{i}) = jstruct2array(data(j).(fn{i}));
         end
     end
   end
 end
-if(~isempty(strmatch('x0x5F_ArrayType_',fn)) && ~isempty(strmatch('x0x5F_ArrayData_',fn)))
+if any(startsWith(fn, 'x0x5F_ArrayType_')) && any(startsWith(fn, 'x0x5F_ArrayData_'))
   newdata=cell(len,1);
   for j=1:len
     ndata=cast(data(j).x0x5F_ArrayData_,data(j).x0x5F_ArrayType_);
     iscpx=0;
-    if(~isempty(strmatch('x0x5F_ArrayIsComplex_',fn)))
+    if any(startsWith(fn, 'x0x5F_ArrayIsComplex_'))
         if(data(j).x0x5F_ArrayIsComplex_)
            iscpx=1;
         end
     end
-    if(~isempty(strmatch('x0x5F_ArrayIsSparse_',fn)))
+    if any(startsWith(fn, 'x0x5F_ArrayIsSparse_'))
         if(data(j).x0x5F_ArrayIsSparse_)
-            if(~isempty(strmatch('x0x5F_ArraySize_',fn)))
+            if any(startsWith(fn, 'x0x5F_ArraySize_'))
                 dim=double(data(j).x0x5F_ArraySize_);
                 if(iscpx && size(ndata,2)==4-any(dim==1))
                     ndata(:,end-1)=complex(ndata(:,end-1),ndata(:,end));
@@ -82,7 +82,7 @@ if(~isempty(strmatch('x0x5F_ArrayType_',fn)) && ~isempty(strmatch('x0x5F_ArrayDa
                 ndata=sparse(ndata(:,1),ndata(:,2),ndata(:,3));
             end
         end
-    elseif(~isempty(strmatch('x0x5F_ArraySize_',fn)))
+    elseif any(startsWith(fn, 'x0x5F_ArraySize_'))
         if(iscpx && size(ndata,2)==2)
              ndata=complex(ndata(:,1),ndata(:,2));
         end

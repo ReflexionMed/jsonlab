@@ -74,13 +74,13 @@ index_esc = 1; len_esc = length(esc);
 
 opt=varargin2struct(varargin{:});
 fileendian=upper(jsonopt('IntEndian','B',opt));
-[os,maxelem,systemendian]=computer;
+[~, ~, systemendian]=computer;
 
 jsoncount=1;
 while pos <= len
     switch(next_char)
         case '{'
-            data{jsoncount} = parse_object(opt);
+            data{jsoncount} = parse_object(opt); %#ok<*AGROW>
         case '['
             data{jsoncount} = parse_array(opt);
         otherwise
@@ -98,14 +98,14 @@ end
 function object = parse_object(varargin)
     parse_char('{');
     object = [];
-    type='';
+    %type='';
     count=-1;
     if(next_char == '$')
-        type=inStr(pos+1); % TODO
-        pos=pos+2;
+        %type=inStr(pos+1); % TODO
+        %pos=pos+2;
     end
     if(next_char == '#')
-        pos=pos+1;
+        %pos=pos+1;
         count=double(parse_number());
     end
     if next_char ~= '}'
@@ -199,7 +199,7 @@ global pos inStr
             return;
         else
             endpos=matching_bracket(inStr,pos);
-            [cid,len]=elem_info(type);
+            [~,len]=elem_info(type);
             count=(endpos-pos)/len;
             [object, adv]=parse_block(type,count,varargin{:});
             pos=pos+adv;

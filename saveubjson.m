@@ -155,7 +155,7 @@ if(~iscell(item))
 end
 
 dim=size(item);
-if(ndims(squeeze(item))>2) % for 3D or higher dimensions, flatten to 2D for now
+if(ndims(squeeze(item))>2) %#ok<*ISMAT> % for 3D or higher dimensions, flatten to 2D for now
     item=reshape(item,dim(1),numel(item)/dim(1));
     dim=size(item);
 end
@@ -176,7 +176,7 @@ elseif(len==0)
 end
 for j=1:dim(2)
     if(dim(1)>1)
-        txt=[txt '['];
+        txt=[txt '[']; %#ok<*AGROW>
     end
     for i=1:dim(1)
        txt=[txt obj2ubjson(name,item{i,j},level+(len>bracketlevel),varargin{:})];
@@ -240,7 +240,7 @@ if(forcearray)
 end
 
 %%-------------------------------------------------------------------------
-function txt=str2ubjson(name,item,level,varargin)
+function txt=str2ubjson(name,item,~,varargin) % level
 txt='';
 if(~ischar(item))
         error('input is not a string');
@@ -307,7 +307,7 @@ else
 end
 if(issparse(item))
     [ix,iy]=find(item);
-    data=full(item(find(item)));
+    data=full(item(find(item))); %#ok<FNDSB>
     if(~isreal(item))
        data=[real(data(:)),imag(data(:))];
        if(size(item,1)==1)
@@ -361,7 +361,7 @@ end
 txt=struct2ubjson(name,st,level,varargin{:});
 
 %%-------------------------------------------------------------------------
-function txt=matdata2ubjson(mat,level,varargin)
+function txt=matdata2ubjson(mat,~,varargin) % level
 if(isempty(mat))
     txt='Z';
     return;
@@ -383,7 +383,7 @@ if(isa(mat,'integer') || isinteger(mat) || (isfloat(mat) && all(mod(mat(:),1) ==
         key='iIlL';
 	type=key(id~=0);
     end
-    txt=[I_a(mat(:),type,size(mat))];
+    txt = I_a(mat(:),type,size(mat));
 elseif(islogical(mat))
     logicalval='FT';
     if(numel(mat)==1)

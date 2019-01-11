@@ -127,7 +127,7 @@ if((isstruct(obj) || iscell(obj))&& isempty(rootname) && forceroot)
     rootname='root';
 end
 
-whitespaces=struct('tab',sprintf('\t'),'newline',sprintf('\n'),'sep',sprintf(',\n'));
+whitespaces=struct('tab',sprintf('\t'),'newline',sprintf('\n'),'sep',sprintf(',\n')); %#ok<*SPRINTFN>
 if(jsonopt('Compact',0,opt)==1)
     whitespaces=struct('tab','','newline','','sep',',');
 end
@@ -187,7 +187,7 @@ if ~iscell(item) && ~isstring(item)
 end
 
 dim=size(item);
-if(ndims(squeeze(item))>2) % for 3D or higher dimensions, flatten to 2D for now
+if(ndims(squeeze(item))>2) %#ok<*ISMAT> % for 3D or higher dimensions, flatten to 2D for now
     item=reshape(item,dim(1),numel(item)/dim(1));
     dim=size(item);
 end
@@ -285,7 +285,7 @@ for j=1:dim(2)
     if(~isempty(names))
       for e=1:length(names)
 	    txt{end+1}=obj2json(names{e},item(i,j).(names{e}),...
-             level+(dim(1)>1)+1+forcearray,varargin{:});
+             level+(dim(1)>1)+1+forcearray,varargin{:}); %#ok<*AGROW>
         if(e<length(names))
             txt{end+1}=',';
         end
@@ -396,7 +396,7 @@ dataformat='%s%s%s%s%s';
 
 if(issparse(item))
     [ix,iy]=find(item);
-    data=full(item(find(item)));
+    data=full(item(find(item))); %#ok<FNDSB>
     if(~isreal(item))
        data=[real(data(:)),imag(data(:))];
        if(size(item,1)==1)
@@ -542,13 +542,13 @@ if(isoct)
 end
 if(isoct)
   escapechars={'\\','\"','\a','\f','\n','\r','\t','\v'};
-  for i=1:length(escapechars);
+  for i=1:length(escapechars)
     newstr=regexprep(newstr,escapechars{i},escapechars{i});
   end
   newstr=regexprep(newstr,'\\\\(u[0-9a-fA-F]{4}[^0-9a-fA-F]*)','\$1');
 else
   escapechars={'\\','\"','\a','\b','\f','\n','\r','\t','\v'};
-  for i=1:length(escapechars);
+  for i=1:length(escapechars)
     newstr=regexprep(newstr,escapechars{i},regexprep(escapechars{i},'\\','\\\\'));
   end
   newstr=regexprep(newstr,'\\\\(u[0-9a-fA-F]{4}[^0-9a-fA-F]*)','\\$1');

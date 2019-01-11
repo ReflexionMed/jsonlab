@@ -99,7 +99,7 @@ jsoncount=1;
 while pos <= len
     switch(next_char)
         case '{'
-            data{jsoncount} = parse_object(opt);
+            data{jsoncount} = parse_object(opt); %#ok<*AGROW>
         case '['
             data{jsoncount} = parse_array(opt);
         otherwise
@@ -144,7 +144,7 @@ function object = parse_object(varargin)
 %%-------------------------------------------------------------------------
 
 function object = parse_array(varargin) % JSON array is written in row-major order
-global pos inStr isoct
+    global pos inStr isoct %#ok<NUSED>
     parse_char('[');
     object = cell(0, 1);
     dim2=[];
@@ -160,14 +160,14 @@ global pos inStr isoct
             arraystr=['[' inStr(pos:endpos)];
             arraystr=regexprep(arraystr,'"_NaN_"','NaN');
             arraystr=regexprep(arraystr,'"([-+]*)_Inf_"','$1Inf');
-            arraystr(arraystr==sprintf('\n'))=[];
+            arraystr(arraystr==newline)=[];
             arraystr(arraystr==sprintf('\r'))=[];
             %arraystr=regexprep(arraystr,'\s*,',','); % this is slow,sometimes needed
             if (~isempty(e1l) && ~isempty(e1r)) % the array is in 2D or higher D
                 astr=inStr((e1l+1):(e1r-1));
                 astr=regexprep(astr,'"_NaN_"','NaN');
                 astr=regexprep(astr,'"([-+]*)_Inf_"','$1Inf');
-                astr(astr==sprintf('\n'))=[];
+                astr(astr==newline)=[];
                 astr(astr==sprintf('\r'))=[];
                 astr(astr==' ')='';
                 if(isempty(find(astr=='[', 1))) % array is 2D
@@ -176,7 +176,7 @@ global pos inStr isoct
             else % array is 1D
                 astr=arraystr(2:end-1);
                 astr(astr==' ')='';
-                [obj, count, errmsg, nextidx]=sscanf(astr,'%f,',[1,inf]);
+                [obj, ~, ~, nextidx] = sscanf(astr,'%f,',[1,inf]);
                 if(nextidx>=length(astr)-1)
                     object=obj;
                     pos=endpos;
@@ -190,7 +190,7 @@ global pos inStr isoct
                 astr(astr=='[')='';
                 astr(astr==']')='';
                 astr(astr==' ')='';
-                [obj, count, errmsg, nextidx]=sscanf(astr,'%f,',inf);
+                [obj, ~, ~, nextidx] = sscanf(astr,'%f,',inf);
                 if(nextidx>=length(astr)-1)
                     if(dim2~=0)
                         object=reshape(obj,dim2,numel(obj)/dim2)';
@@ -348,7 +348,7 @@ function num = parse_number(varargin)
         [num] = sscanf(currstr, '%f', 1);
         delta=numstr+1;
     else
-        [num, one, err, delta] = sscanf(currstr, '%f', 1);
+        [num, ~, err, delta] = sscanf(currstr, '%f', 1);
         if ~isempty(err)
             error_pos('Error reading number at position %d');
         end
