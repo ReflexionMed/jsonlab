@@ -86,7 +86,9 @@ if any(startsWith(fn, 'x0x5F_ArrayType_')) && any(startsWith(fn, 'x0x5F_ArrayDat
         if(iscpx && size(ndata,2)==2)
              ndata=complex(ndata(:,1),ndata(:,2));
         end
-        ndata=reshape(ndata(:),data(j).x0x5F_ArraySize_);
+        sz = data(j).x0x5F_ArraySize_;
+        if iscell(sz), sz = cell2mat(sz); end
+        ndata=reshape(ndata(:), sz);
     end
     newdata{j}=ndata;
   end
