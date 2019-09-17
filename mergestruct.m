@@ -19,7 +19,7 @@ function s = mergestruct(s1, s2)
 % -- this function is part of jsonlab toolbox 
 % (http://iso2mesh.sf.net/cgi-bin/index.cgi?jsonlab)
 %
-    if ~isstruct(s1) || ~isstruct(s2)
+    if (~isstruct(s1) && ~isobject(s1)) || ~isstruct(s2)
         error('input parameters contain non-struct');
     end
     if length(s1)>1 || length(s2)>1
