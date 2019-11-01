@@ -471,7 +471,10 @@ if(isempty(mat))
     txt='null';
     return;
 end
-floatformat=jsonopt('FloatFormat','%.10g',varargin{:});
+% .17g is needed to ensure no accuracy loss when converting to JSON and back
+% otherwise save-to-DB operations will modify the saved data, which is undesirable
+% especially when checking objects for equality, e.g. obj != savedToDb(obj)
+floatformat=jsonopt('FloatFormat','%.17g',varargin{:});
 %if(numel(mat)>1)
     formatstr=['[' repmat([floatformat ','],1,size(mat,2)-1) [floatformat sprintf('],%s',nl)]];
 %else

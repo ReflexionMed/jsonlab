@@ -76,7 +76,7 @@ elseif(exist(fname,'file'))
        end
    end
 else
-   error('input file does not exist');
+   error('input file %s does not exist', fname);
 end
 
 pos = 1; len = length(string); inStr = string;
@@ -367,6 +367,7 @@ function val = parse_value(varargin)
     switch(inStr(pos))
         case '"'
             val = parseStr(varargin{:});
+            if isempty(val), val = ''; end % normalize empty strings to be 0x0
             return;
         case '['
             val = parse_array(varargin{:});
