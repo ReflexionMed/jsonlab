@@ -22,6 +22,10 @@ function data = loadjson(fname,varargin)
 % input:
 %      fname: input file name, if fname contains "{}" or "[]", fname
 %             will be interpreted as a JSON string
+%
+%             If fname is an empty string '', then opt.String will be
+%             interpreted as JSON string
+%
 %      opt: a struct to store parsing options, opt can be replaced by 
 %           a list of ('param',value) pairs - the param string is equivallent
 %           to a field in opt. opt can have the following 
@@ -30,6 +34,9 @@ function data = loadjson(fname,varargin)
 %           opt.SimplifyCell [0|1]: if set to 1, loadjson will call cell2mat
 %                         for each element of the JSON data, and group 
 %                         arrays based on the cell2mat rules.
+%           opt.String    if provided loadjson will parse this string instead
+%                         of loading data from file. This will only be used when 
+%                         fname == ''
 %           opt.FastArrayParser [1|0 or integer]: if set to 1, use a
 %                         speed-optimized array parser when loading an 
 %                         array object. The fast array parser may 
@@ -63,9 +70,9 @@ function data = loadjson(fname,varargin)
 
 global pos inStr len  esc index_esc len_esc isoct arraytoken
 
-if(regexp(fname,'^\s*(?:\[.+\])|(?:\{.+\})\s*$','once'))
-   string=fname;
-elseif(exist(fname,'file'))
+if isempty(fname) || ~isempty(regexp(fname,'^\s*(?:\[.+\])|(?:\{.+\})\s*$','once'))
+   string = fname;
+elseif exist(fname,'file')
    try
        string = fileread(fname);
    catch
@@ -79,6 +86,16 @@ else
    error('input file %s does not exist', fname);
 end
 
+opt = varargin2struct(varargin{:});
+
+opt_string = jsonopt('String', '', opt);
+if isempty(opt_string) && isempty(fname)
+    error('opt.String must be provided, if <fname> is empty');
+end
+if ~isempty(opt_string)
+    string = opt_string;
+end
+
 pos = 1; len = length(string); inStr = string;
 isoct=exist('OCTAVE_VERSION','builtin');
 arraytoken=find(inStr=='[' | inStr==']' | inStr=='"');
@@ -89,8 +106,6 @@ arraytoken=sort([arraytoken escquote]);
 % String delimiters and escape chars identified to improve speed:
 esc = find(inStr=='"' | inStr=='\' ); % comparable to: regexp(inStr, '["\\]');
 index_esc = 1; len_esc = length(esc);
-
-opt=varargin2struct(varargin{:});
 
 if(jsonopt('ShowProgress',0,opt)==1)
     opt.progressbar_=waitbar(0,'loading ...');
